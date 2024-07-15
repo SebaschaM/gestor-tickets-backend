@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Empleado {
+  empleado_id Int     @id @default(autoincrement())
+  nombres     String?
+  apellidos   String?
+  usuario_id  Int
+  usuario     Usuario @relation(fields: [usuario_id], references: [usuario_id])
+}
+
+model Solicitante {
+  solicitante_id  Int          @id @default(autoincrement())
+  nombres         String?
+  apellidos       String?
+  usuario_id      Int?
+  usuario         Usuario?     @relation(fields: [usuario_id], references: [usuario_id])
+  tipo_oficina_id Int?
+  tipo_oficina    TipoOficina? @relation(fields: [tipo_oficina_id], references: [tipo_oficina_id])
+}
+
+model TipoOficina {
+  tipo_oficina_id Int           @id @default(autoincrement())
+  nombre_oficina  String?
+  solicitantes    Solicitante[]
+}
+
+model Solicitud {
+  solicitud_id       Int                @id @default(autoincrement())
+  numero_ticket      String?
+  asunto_solicitud   String?
+  detalle_solicitud  String?
+  fecha_asignada     DateTime?
+  usuario_id         Int
+  tipo_solicitud_id  Int?
+  tipo_servicio_id   Int?
+  tipo_estado_id     Int?
+  tipo_prioridad_id  Int?
+  fecha_creacion     DateTime?
+  fecha_modificacion DateTime?
+  token              String?            @unique
+  tipo_solicitud     TipoSolicitud?     @relation(fields: [tipo_solicitud_id], references: [tipo_solicitud_id])
+  tipo_servicio      TipoServicio?      @relation(fields: [tipo_servicio_id], references: [tipo_servicio_id])
+  tipo_estado        TipoEstado?        @relation(fields: [tipo_estado_id], references: [tipo_estado_id])
+  tipo_prioridad     TipoPrioridad?     @relation(fields: [tipo_prioridad_id], references: [tipo_prioridad_id])
+  solicitud_usuario  SolicitudUsuario[]
+}
+
+model TipoEstado {
+  tipo_estado_id     Int         @id @default(autoincrement())
+  nombre_tipo_estado String?
+  solicitudes        Solicitud[]
+}
+
+model TipoPrioridad {
+  tipo_prioridad_id     Int         @id @default(autoincrement())
+  nombre_tipo_prioridad String?
+  solicitudes           Solicitud[]
+}
+
+model TipoServicio {
+  tipo_servicio_id     Int         @id @default(autoincrement())
+  nombre_tipo_servicio String?
+  tipo_familia_id      Int
+  tipo_familia         TipoFamilia @relation(fields: [tipo_familia_id], references: [tipo_familia_id])
+  solicitudes          Solicitud[]
+}
+
+model TipoFamilia {
+  tipo_familia_id     Int                        @id @default(autoincrement())
+  nombre_tipo_familia String?
+  tipo_servicios      TipoServicio[]
+  perfil_tecnico      TipoPerfilTecnicoFamilia[]
+}
+
+model SolicitudUsuario {
+  solicitud_usuario_id Int       @id @default(autoincrement())
+  solicitud_id         Int
+  usuario_id           Int
+  solicitud            Solicitud @relation(fields: [solicitud_id], references: [solicitud_id])
+  usuario              Usuario   @relation(fields: [usuario_id], references: [usuario_id])
+}
+
+model TipoPerfilTecnico {
+  tipo_perfil_tecnico_id     Int                        @id @default(autoincrement())
+  nombre_tipo_perfil_tecnico String?
+  perfil_tecnico_familia     TipoPerfilTecnicoFamilia[]
+  rol_tipo_perfil_tecnico    RolTipoPerfilTecnico[]
+}
+
+model TipoPerfilTecnicoFamilia {
+  tipo_perfil_tecnico_familia_id Int               @id @default(autoincrement())
+  tipo_perfil_tecnico_id         Int
+  tipo_familia_id                Int
+  tipo_perfil_tecnico            TipoPerfilTecnico @relation(fields: [tipo_perfil_tecnico_id], references: [tipo_perfil_tecnico_id])
+  tipo_familia                   TipoFamilia       @relation(fields: [tipo_familia_id], references: [tipo_familia_id])
+}
+
+model TipoSolicitud {
+  tipo_solicitud_id     Int         @id @default(autoincrement())
+  nombre_tipo_solicitud String?
+  solicitudes           Solicitud[]
+}
+
+model Usuario {
+  usuario_id        Int                @id @default(autoincrement())
+  nombre_usuario    String?
+  correo            String?
+  contrasenia       String?
+  rol_id            Int
+  rol               Rol                @relation(fields: [rol_id], references: [rol_id])
+  empleados         Empleado[]
+  solicitantes      Solicitante[]
+  solicitud_usuario SolicitudUsuario[]
+}
+
+model Rol {
+  rol_id                  Int                    @id @default(autoincrement())
+  nombre_rol              String?
+  usuarios                Usuario[]
+  rol_tipo_perfil_tecnico RolTipoPerfilTecnico[]
+}
+
+model RolTipoPerfilTecnico {
+  rol_tipo_perfil_tecnico_id Int               @id @default(autoincrement())
+  rol_id                     Int
+  tipo_perfil_tecnico_id     Int
+  rol                        Rol               @relation(fields: [rol_id], references: [rol_id])
+  tipo_perfil_tecnico        TipoPerfilTecnico @relation(fields: [tipo_perfil_tecnico_id], references: [tipo_perfil_tecnico_id])
+}

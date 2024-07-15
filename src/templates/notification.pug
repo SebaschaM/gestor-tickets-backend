@@ -1,0 +1,92 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Nueva Solicitud Creada
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+      }
+      .header img {
+        max-width: 100px;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      p {
+        margin: 10px 0;
+        font-size: 16px;
+      }
+      .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        column-gap: 10px;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+        transition: background 0.3s;
+        min-width: 100px;
+      }
+      .button-yes {
+        background-color: #28a745;
+      }
+      .button-yes:hover {
+        background-color: #218838;
+      }
+      .button-no {
+        background-color: #dc3545;
+      }
+      .button-no:hover {
+        background-color: #c82333;
+      }
+  body
+    .container
+      .header
+        img(src="https://res.cloudinary.com/dvzjgzqbn/image/upload/v1720917548/svsegxphlutmgrrsh0ax.png" alt="Logo")
+      h1 Nueva Solicitud Creada
+      p
+        strong Asunto: 
+        | #{asunto_solicitud}
+      p
+        strong Detalle: 
+        | #{detalle_solicitud}
+      p
+        strong Número de Ticket: 
+        | #{numero_ticket}
+      p
+        strong Tipo de Solicitud: 
+        | #{nombre_tipo_solicitud}
+      p
+        strong Tipo de Servicio: 
+        | #{nombre_tipo_servicio}
+      p
+        strong Tipo de Familia: 
+        | #{nombre_tipo_familia}
+      p ¿Deseas atender la solicitud por este medio?
+      .button-container
+      a.button.button-yes(href=`${url_frontend}/admin/assign-request/help-desk?token=${token}`) Sí
+      a.button.button-no(href=`${url_frontend}/admin/assign-request/employee-internal?token=${token}`) No
