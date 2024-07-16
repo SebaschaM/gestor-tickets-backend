@@ -95,13 +95,17 @@ export class RequestService {
   async findAllRequests(currentPage: number) {
     try {
       const requestsPerPage = 10;
-
+  
       const requests = await this.prisma.solicitud.findMany({
         skip: (currentPage - 1) * requestsPerPage,
         take: requestsPerPage,
         include: {
           tipo_solicitud: true,
-          tipo_servicio: true,
+          tipo_servicio: {
+            include: {
+              tipo_familia: true, // Incluir la familia del tipo de servicio
+            },
+          },
           tipo_estado: true,
           tipo_prioridad: true,
           solicitud_usuario: {
@@ -110,6 +114,15 @@ export class RequestService {
               usuario: {
                 select: {
                   nombre_usuario: true,
+                  rol: {
+                    include: {
+                      rol_tipo_perfil_tecnico: {
+                        include: {
+                          tipo_perfil_tecnico: true,
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -119,7 +132,7 @@ export class RequestService {
           fecha_creacion: "desc",
         },
       });
-
+  
       // Filtrar los solicitud_usuario que no tienen usuario_id igual a 1
       const filteredRequests = requests.map((request) => {
         return {
@@ -129,14 +142,34 @@ export class RequestService {
           ),
         };
       });
-
+  
+      // Añadir el nombre del perfil técnico a los datos de usuario
+      const enrichedRequests = filteredRequests.map((request) => {
+        const solicitud_usuario = request.solicitud_usuario.map((su) => {
+          const perfil_tecnico = su.usuario.rol.rol_tipo_perfil_tecnico.map(
+            (rtpt) => rtpt.tipo_perfil_tecnico.nombre_tipo_perfil_tecnico
+          );
+          return {
+            ...su,
+            usuario: {
+              ...su.usuario,
+              perfiles_tecnicos: perfil_tecnico,
+            },
+          };
+        });
+        return {
+          ...request,
+          solicitud_usuario,
+        };
+      });
+  
       const totalRequests = await this.prisma.solicitud.count();
       const totalPages = Math.ceil(totalRequests / requestsPerPage);
-
+  
       return {
         statusCode: 200,
         message: "Solicitudes obtenidas exitosamente",
-        data: filteredRequests,
+        data: enrichedRequests,
         totalPages,
         requestsPerPage,
         currentPage: Number(currentPage),
@@ -148,6 +181,7 @@ export class RequestService {
       };
     }
   }
+  
 
   async findOne(id: number) {
     return `This action returns a #${id} request`;
