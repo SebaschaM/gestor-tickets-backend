@@ -6,7 +6,7 @@ import * as cookieParser from "cookie-parser";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const corsOptions = {
-    origin: "http://localhost:5173",
+    origin: "https://gestor-tickets.devioz.com",
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     optionsSuccessStatus: 200,
