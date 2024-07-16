@@ -86,7 +86,7 @@ html
       p
         strong Tipo de Familia: 
         | #{nombre_tipo_familia}
-      p ¿Deseas atender la solicitud por este medio?
+      p ¿Deseas asignar la solicitud a un personal de soporte?
       .button-container
-      a.button.button-yes(href=`${url_frontend}/admin/assign-request/help-desk?token=${token}`) Sí
-      a.button.button-no(href=`${url_frontend}/admin/assign-request/employee-internal?token=${token}`) No
+      a.button.button-yes(href=`${url_frontend}/admin/assign-request/employee-internal?token=${token}`) Sí
+      a.button.button-no(href=`${url_frontend}/admin/assign-request/help-desk?token=${token}`) No
